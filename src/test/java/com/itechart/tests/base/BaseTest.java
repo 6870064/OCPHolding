@@ -7,8 +7,9 @@ import com.itechart.pages.LoginPage;
 import com.itechart.pages.account.AccountDetailsPage;
 import com.itechart.pages.account.AccountListViewPage;
 import com.itechart.pages.account.AccountModalPage;
+import com.itechart.pages.cases.CaseDetailsPage;
+import com.itechart.pages.cases.CaseListViewPage;
 import com.itechart.utils.PropertyReader;
-import com.sun.xml.bind.v2.TODO;
 import lombok.extern.log4j.Log4j2;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.testng.annotations.AfterClass;
@@ -24,6 +25,8 @@ import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
 public abstract class BaseTest {
     protected LoginPage loginPage;
     protected HomePage homePage;
+    protected CaseListViewPage caseListViewPage;
+    protected CaseDetailsPage caseDetailsPage;
     protected AccountListViewPage accountListViewPage;
     protected AccountModalPage accountModalPage;
     protected AccountDetailsPage accountDetailsPage;
@@ -38,11 +41,8 @@ public abstract class BaseTest {
         Configuration.browser = "chrome";
         var options = new ChromeOptions();
 
-        //TODO похоже, отключение нотификаций в браузере не работает
-        // https://github.com/selenide/selenide/issues/903
-
-        options.addArguments("--disable-features=site-per-process");
-        options.addArguments("disable-infobars");
+        options.addArguments("--disable-notifications");
+        Configuration.browserCapabilities = options;
         open();
         getWebDriver().manage().window().maximize();
 
@@ -51,10 +51,13 @@ public abstract class BaseTest {
         accountDetailsPage = new AccountDetailsPage();
         accountListViewPage = new AccountListViewPage();
         accountModalPage = new AccountModalPage();
+        caseListViewPage = new CaseListViewPage();
+        caseDetailsPage = new CaseDetailsPage();
     }
 
     @AfterClass(alwaysRun = true, description = "Close browser")
     public void tearDown() {
+        Selenide.closeWindow();
         getWebDriver().quit();
     }
 }
